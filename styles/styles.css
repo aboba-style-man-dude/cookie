@@ -12,16 +12,19 @@
     font-family: 'Steppe-ExtraBold';
     src: url('../fonts/Steppe-ExtraBold.ttf');
 }
+
 body {
     background: #5243F4;
     font-family: 'Steppe-Book', sans-serif;
     color: white;
 }
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
 }
-.button {
+
+.button-zakaz {
     background-color: white;
     border-radius: 60px;
     width: 178px;
@@ -36,6 +39,7 @@ body {
     cursor: pointer;
 
 }
+
 .button:hover {
     background-color: #eeeeee;
 }
@@ -71,7 +75,7 @@ body {
 }
 
 .menu-item a {
-    font-size: 16px;
+    font-size: 20px;
     line-height: 130%;
     text-decoration: none;
     color: white;
@@ -113,6 +117,7 @@ body {
     z-index: -1;
 
 }
+
 .products {
     padding: 100px 0;
 }
@@ -140,6 +145,106 @@ body {
     position: relative;
     max-width: 100%;
 }
+
 .products-items-details {
-    
+    padding: 24px;
+}
+
+.products-items-title {
+    font-size: 20px;
+}
+
+.button-violet-button {
+    background: #5243F4;
+    border-radius: 60px;
+    width: 178px;
+    height: 58px;
+    box-sizing: border-box;
+    padding: 18px;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.perValuta{
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+    border: 1px solid white;
+    padding: 5px 10px;
+    height: 25px;
+    min-width:25px;
+    border-radius: 50px;
+    text-align: center;
+    cursor: pointer;
+    line-height: 28px;
+    z-index: 1;
+    user-select: none;
+    transform: scale(1);
+    animation: pulseShadow 2s infinite;
+}
+
+@keyframes pulseShadow {
+    0% {
+        box-shadow: 0 0 0 0px rgba(255, 255, 255, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 9px rgba(255, 255, 255, 0.25);
+    }
+
+    100% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+}
+
+
+
+/* Тут для формы */
+
+.formZakaz {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1; /* На переднем плане */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Позволяет прокручивать, если нужно */
+    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный фон */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Отступ сверху и центрирование */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ширина окна */
+    color: black;
+}
+
+.dannie{
+    padding: 5px;
+    display: grid;
+    grid-template-columns: auto;
+    gap: 5px;
+}
+
+.close {
+    color: #aaa;
+    float: right; /* Выравнивание по правому краю */
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red; /* Цвет при наведении */
+    text-decoration: none;
+    cursor: pointer;
 }

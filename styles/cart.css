@@ -87,72 +87,6 @@ body {
 }
 
 
-.main-content {
-    padding-top: 161px;
-    padding-bottom: 200px
-}
-
-.main-info {
-    max-width: 811px;
-}
-
-.main-title {
-    font-family: 'Steppe-ExtraBold', sans-serif;
-    font-size: 90px;
-    line-height: 100%;
-    margin-bottom: 20px;
-}
-
-.main-text {
-    max-width: 695px;
-    font-size: 18px;
-    line-height: 130%;
-    margin-bottom: 40px;
-}
-
-.main-image {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: -1;
-
-}
-
-.products {
-    padding: 100px 0;
-}
-
-.products-items {
-    display: grid;
-    grid-template-columns: repeat(3, 384px);
-    gap: 90px 24px;
-    margin-top: 110px;
-}
-
-.products-item {
-    background-color: white;
-    color: #5D3427;
-}
-
-.products-items-image {
-    height: 202px;
-    text-align: center;
-}
-
-.products-items-image img {
-    height: 272px;
-    top: -70px;
-    position: relative;
-    max-width: 100%;
-}
-
-.products-items-details {
-    padding: 24px;
-}
-
-.products-items-title {
-    font-size: 20px;
-}
 
 .button-violet-button {
     background: #5243F4;
@@ -171,22 +105,33 @@ body {
     justify-content: center;
 }
 
-.button-violet-button-toCart {
-    background: #5243F4;
+.delCart {
+    background: rgb(247, 197, 197);
     border-radius: 60px;
     width: 178px;
     height: 58px;
     box-sizing: border-box;
-    padding: 18px;
+    /* padding: 14px; */
     text-align: center;
-    font-size: 18px;
-    color: white;
+    /* margin-bottom: 10px; */
+    font-size: 20px;
+    color: #0c0a1e;
     border: 0;
     outline: none;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    align-items: center;
+
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+    padding: 5px 10px;
+
+}
+
+.delCart:hover{
+    background: rgb(247, 58, 58);
 }
 
 .perValuta{
@@ -265,4 +210,46 @@ body {
     color: red;
     text-decoration: none;
     cursor: pointer;
+}
+
+
+
+.cart__list_nothing{
+    background: white;
+    color: #5243F4;
+    font-size: 25px;
+    border-radius: 15px;
+    padding: 20px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart__list{
+    background: white;
+    color: #5243F4;
+    font-size: 25px;
+    padding: 20px 20px;
+    display: grid;
+    grid-template-columns: repeat(1, 500px);
+    gap: 90px 24px;
+    overflow-y: auto;
+}
+
+.cart-item{
+    background: rgb(237, 238, 238);
+    color: #5243F4;
+    font-size: 25px;
+    border-radius: 15px;
+    padding: 15px;
+
+}
+
+.cataloglink{
+    color: #5243F4;
+    font-size: 20px;
+    text-decoration: none;
+}
+.cataloglink:hover{
+    color: rgb(214, 186, 2);
 }

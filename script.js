@@ -17,46 +17,47 @@ const data = [
     },
 
     {
-        name: "Лучшие друзья",
-        kart: "images/1.png",
-        descr: "Печенье, с которого все началось! Наше фирменное печенье с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой серединкой.",
+        name: "Шоколадный француз",
+        kart: "images/2.png",
+        descr: "Это печенье, изготовленное из тёмного французского какао и полусладкой шоколадной стружки, наверняка удовлетворит даже самого заядлого любителя шоколада.",
+        pr: "24",
+        we: "2 шт./ 200 гр."
+    },
+
+    {
+        name: "Овсянка с изюмом, Сэр!",
+        kart: "images/3.png",
+        descr: "Это сдобное маслянистое печенье весом шесть унций каждое, золотисто-коричневое снаружи, влажное внутри и наполненное пухлым сладким изюмом.",
+        pr: "18",
+        we: "2 шт./ 200 гр."
+    },
+
+    {
+        name: "Шоколадное наслаждение",
+        kart: "images/4.png",
+        descr: "Идеально хрустящее снаружи и достаточно густое и липкое в центре, это печенье наполнено полусладкой и тёмной шоколадной стружкой, придающей богатую глубину вкуса.",
+        pr: "24",
+        we: "2 шт./ 200 гр."
+    },
+
+    {
+        name: "Арахисовый рай",
+        kart: "images/5.png",
+        descr: "Сладкое, пикантное и идеально сбалансированное печенье удовлетворяет тягу любителей арахисового масла и шоколада.",
         pr: "20",
         we: "2 шт./ 200 гр."
     },
 
     {
-        name: "Лучшие друзья",
-        kart: "images/1.png",
-        descr: "Печенье, с которого все началось! Наше фирменное печенье с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой серединкой.",
-        pr: "20",
-        we: "2 шт./ 200 гр."
-    },
-
-    {
-        name: "Лучшие друзья",
-        kart: "images/1.png",
-        descr: "Печенье, с которого все началось! Наше фирменное печенье с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой серединкой.",
-        pr: "20",
-        we: "2 шт./ 200 гр."
-    },
-
-    {
-        name: "Лучшие друзья",
-        kart: "images/1.png",
-        descr: "Печенье, с которого все началось! Наше фирменное печенье с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой серединкой.",
-        pr: "20",
-        we: "2 шт./ 200 гр."
-    },
-
-    {
-        name: "Лучшие друзья",
-        kart: "images/1.png",
-        descr: "Печенье, с которого все началось! Наше фирменное печенье с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой серединкой.",
-        pr: "20",
+        name: "Шоколадный ореховый деликатес",
+        kart: "images/6.png",
+        descr: "Наша фирменная рецептура печенья с шоколадными крошками и грецкими орехами гарантирует незабываемый вкусовой опыт. Каждое печенье хрустит снаружи, но раскрывает внутри нежную сердцевину.",
+        pr: "18",
         we: "2 шт./ 200 гр."
     }
 ]
 
+newV1="$"
 changeValuta.addEventListener('click', function(e) {
     const currentV = e.target.innerText
 
@@ -69,44 +70,81 @@ changeValuta.addEventListener('click', function(e) {
     }
     e.target.innerText = newV
 
-for (let i = 0; i < prices.length; i++){
+    for (let i = 0; i < prices.length; i++){
     
     
     prices[i].innerText = String(Number(prices[i].getAttribute("base-price"))*c)+`${newV}`
+    }
+    newV1=newV
+})
+
+// let cart = [JSON.parse(localStorage.getItem('cart'))] || [];
+// localStorage.setItem('cart', JSON.stringify(cart))
+
+
+function loadData() { //функция для получения данных из loсаlStorage
+    const savedData = localStorage.getItem('cart') //обращается к localStorage и пытается получить данные, сохраненные под ключом 'cart'
+    return savedData ? JSON.parse(savedData) : [] //проверяет есть ли сохраненные данные
 }
 
+const cart = loadData()
+
+
+// при нажатии В корзину
+
+productsList.addEventListener('click', function(event) {
+    // проверяем была ли нажата какя-нибудь кнопка "В корзину"
+    if (event.target && event.target.classList.contains('button-violet-button-toCart')) {
+        const button = event.target; // сохраняем ссылку на кнопку
+        const productName = button.closest('.products-items-details').querySelector('.products-items-title').innerText // получаем название товара
+        console.log(productName);
+
+
+        const product = data.find(item => item.name === productName)
+
+        // сохраняем в localStorage
+        
+        cart.push({
+            name: product.name,
+            kart: product.kart,
+            descr: product.descr,
+            pr: product.pr,
+            we: product.we
+        });
+        localStorage.setItem('cart', JSON.stringify(cart))
+    }
 })
 
 
 
-
-// при нажатии заказать
 productsList.addEventListener('click', function(event) {
     // проверяем была ли нажата какя-нибудь кнопка "Заказать"
     if (event.target && event.target.classList.contains('button-violet-button')) {
         const button = event.target; // сохраняем ссылку на кнопку
-        const productName = button.closest('.products-items-details').querySelector('.products-items-title').innerText; // Получаем название товара
+        const productName = button.closest('.products-items-details').querySelector('.products-items-title').innerText; // получаем название товара
         console.log(productName);
 
-        orderProductName.innerText = `Вы хотите заказать: ${productName}`;
+        
+        orderProductName.innerText = `Вы хотите заказать: ${productName}`
         formZakaz.style.display = 'block'; // показываем окно формы
+       
     }
 })
 // закрытие формы при нажатии на крестик
 closeButton.addEventListener('click', function() {
-    formZakaz.style.display = 'none'; 
+    formZakaz.style.display = 'none'
 })
 
 // закрытие формы при нажатии вне его области
 window.addEventListener('click', function(event) {
     if (event.target === formZakaz) {
-        formZakaz.style.display = 'none';
+        formZakaz.style.display = 'none'
     }
 })
 
 function createCookie(obj){
     const pech = document.createElement('div')
-    pech.classList.add("products-item")//задаем ей класс
+    pech.classList.add("products-item")
 
     //изображение
     const img = document.createElement('img')
@@ -139,8 +177,8 @@ function createCookie(obj){
 
     const prExstraPriceJS = document.createElement('div')
     prExstraPriceJS.classList.add("products-items-price")
-    prExstraPriceJS.innerText = obj.pr
-    // prExstraPriceJS.setAttribute('base-price')
+    prExstraPriceJS.innerText = obj.pr+newV1
+    prExstraPriceJS.setAttribute('base-price', obj.pr)
 
 
     const prExstraWeightJS = document.createElement('div')
@@ -151,11 +189,16 @@ function createCookie(obj){
     prBtnZ.classList.add("button-violet-button")
     prBtnZ.innerText = "Заказать"
 
+    const prBtnCart = document.createElement('button')
+    prBtnCart.classList.add("button-violet-button-toCart")
+    prBtnCart.innerText = "В корзину"
+
     prExstraInfJS.appendChild(prExstraPriceJS)
     prExstraInfJS.appendChild(prExstraWeightJS)
 
     prExstraJS.appendChild(prExstraInfJS)
     prExstraJS.appendChild(prBtnZ)
+    prExstraJS.appendChild(prBtnCart)
 
     details.appendChild(prTitleJS)
     details.appendChild(prTextJS)
@@ -172,7 +215,6 @@ function createCookie(obj){
 
 
 
-// productsList.innerHTML=''
 for (let item of data){
     const tmpEl = createCookie(item)
 

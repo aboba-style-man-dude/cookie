@@ -177,14 +177,10 @@ function render(){
             cartItemsContainer.appendChild(itemDiv)
             
         });
-        const itogSumDiv = document.createElement('div')
-        itogSumDiv.innerText = "Итого к оплате: "
-        const itogSum = document.createElement('div')
-        itogSum.classList.add('products-items-price')
-        itogSum.setAttribute('base-price', sumInCart())
-        itogSum.innerText = sumInCart() + newV1
-        itogSumDiv.appendChild(itogSum)
-        cartItemsContainer.appendChild(itogSumDiv)
+        const totalDiv = document.createElement('div');
+        totalDiv.classList.add('cart-total');
+        totalDiv.innerText = "Итого к оплате: " + sumInCart() + newV1;
+        document.body.appendChild(totalDiv);
     }
 
 

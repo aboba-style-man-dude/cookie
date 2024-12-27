@@ -262,15 +262,16 @@ body {
     align-items: center;
 }
 
-.cart__list{
+.cart__list {
     background: white;
     color: #5243F4;
     font-size: 25px;
     padding: 20px 20px;
     display: grid;
-    grid-template-columns: repeat(1, 500px);
-    gap: 90px 24px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 30px;
     overflow-y: auto;
+    margin-bottom: 100px;
 }
 
 .cart-item{
@@ -289,4 +290,17 @@ body {
 }
 .cataloglink:hover{
     color: rgb(214, 186, 2);
+}
+
+.cart-total {
+    position: fixed;
+    left: 50px;
+    bottom: 50px;
+    background: white;
+    color: #5243F4;
+    padding: 15px 25px;
+    border-radius: 60px;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie</title>
+    <link rel="stylesheet" href="authoriztn.css">
+</head>
+<body>
+    <section class="main-imr">
+        <div class="containr">
+            <h2 id="form-title">Вход</h2>
+            <form id="auth-form">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Введите свою почту..." required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" placeholder="Введите свой пароль..." required>
+                </div>
+                <div class="input-group" id="confirm-password-group" style="display: none;">
+                    <label for="confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="confirm-password" placeholder="Подтвердите пароль...">
+                </div>
+                <button class="btn" type="submit">Сохранить</button>
+            </form>
+            <p class="toggle" id="toggle-form">У вас нет аккаунта? <span>Создать аккаунт</span></p>
+        </div>
+        <img src="images/cookie.png" alt="cookie" class="main-image">
+    </section>     
+    
+    <script src="authoriztn.js"></script>
+    
+</body>
+</html>

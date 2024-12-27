@@ -314,3 +314,26 @@ body {
     font-size: 16px;
     line-height: 1.5;
 }
+
+.products-item-extra {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.products-item-info {
+    flex: 1;
+}
+
+.button-violet-button,
+.button-violet-button-toCart {
+    margin: 0;
+    flex-shrink: 0;
+    width: 120px;
+    height: 45px;
+    padding: 10px;
+    font-size: 16px;
+}

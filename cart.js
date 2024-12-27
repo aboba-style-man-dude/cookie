@@ -5,7 +5,10 @@ const delInCart = (document.getElementsByClassName('delCart'))[0]
 
 const changeValuta = document.getElementsByClassName('perValuta')[0]
 
-
+const formZakaz = document.getElementsByClassName('formZakaz')[0];
+const closeButton = document.getElementById('closeButton');
+const orderProductName = document.getElementById('orderProductName');
+const orderCartBtn = document.getElementsByClassName('orderCartBtn')[0];
 
 function loadData() { //функция для получения данных из loсаlStorage
     const savedData = localStorage.getItem('cart') //обращается к localStorage и пытается получить данные, сохраненные под ключом 'cart'
@@ -131,35 +134,36 @@ function sumInCart(){
 }
 
 function render(){
+    const orderCartBtn = document.querySelector('.orderCartBtn');
+    
     if (cart.length === 0) {
-        cartItemsContainer.innerHTML = ""
+        cartItemsContainer.innerHTML = "";
         // если в корзине ничего нет
-        const emptyCartMessage = document.createElement('div')
-        emptyCartMessage.classList.add('cart__list_nothing')
-        emptyCartMessage.innerText = "Корзина пока пуста"
+        const emptyCartMessage = document.createElement('div');
+        emptyCartMessage.classList.add('cart__list_nothing');
+        emptyCartMessage.innerText = "Корзина пока пуста";
+
+        // скрываем кнопку "Заказать все"
+        orderCartBtn.classList.add('hidden');
 
         //ссылка для перехода обратно в каталог
-        const catalogLink = document.createElement('a')
-        catalogLink.classList.add('cataloglink')
-        catalogLink.innerText = "Перейти в каталог"
-        catalogLink.href = "allpechenki.html"
-        catalogLink.style.display = "block"//сделать в виде див чтобы лучше видно было а не как текст
-        catalogLink.style.marginTop = "10px"
+        const catalogLink = document.createElement('a');
+        catalogLink.classList.add('cataloglink');
+        catalogLink.innerText = "Перейти в каталог";
+        catalogLink.href = "allpechenki.html";
+        catalogLink.style.display = "block";//сделать в виде див чтобы лучше видно было а не как текст
+        catalogLink.style.marginTop = "10px";
 
         // добавляем сообщение и ссылку в контейнер
-        cartItemsContainer.appendChild(emptyCartMessage)
-        cartItemsContainer.appendChild(catalogLink)
-
-
-
-
-
-        
+        cartItemsContainer.appendChild(emptyCartMessage);
+        cartItemsContainer.appendChild(catalogLink);
     } else {
+        // показываем кнопку "Заказать все" если есть товары
+        orderCartBtn.classList.remove('hidden');
         // если есть, показать товары в корзине
-        cartItemsContainer.innerHTML = ""
+        cartItemsContainer.innerHTML = "";
         cart.forEach(item => {
-            const itemDiv = createPosition(item)
+            const itemDiv = createPosition(item);
             // itemDiv.classList.add('cart-item')
         
         
@@ -174,18 +178,13 @@ function render(){
            //     </div>
             // `;
             
-            cartItemsContainer.appendChild(itemDiv)
-            
+            cartItemsContainer.appendChild(itemDiv);
         });
         const totalDiv = document.createElement('div');
         totalDiv.classList.add('cart-total');
         totalDiv.innerText = "Итого к оплате: " + sumInCart() + newV1;
         document.body.appendChild(totalDiv);
     }
-
-
-
-    
 }
 //нужен ли рендер???
 // function render(){//обновляет отображение на экране
@@ -195,3 +194,36 @@ function render(){
 //     }
 // }
 render();
+
+// Обработчик для кнопки "Заказать всё"
+orderCartBtn.addEventListener('click', function() {
+    const totalSum = sumInCart();
+    orderProductName.innerText = `Сумма заказа: ${totalSum}${newV1}`;
+    formZakaz.style.display = 'block';
+});
+
+// Закрытие формы при нажатии на крестик
+closeButton.addEventListener('click', function() {
+    formZakaz.style.display = 'none';
+});
+
+// Закрытие формы при нажатии вне её области
+window.addEventListener('click', function(event) {
+    if (event.target === formZakaz) {
+        formZakaz.style.display = 'none';
+    }
+});
+
+// Обработка отправки формы
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    
+    alert(`Заказ оформлен!\nИмя: ${name}\nАдрес: ${address}`);
+    formZakaz.style.display = 'none';
+    
+    // Очистка корзины после заказа
+    localStorage.clear();
+    location.reload();
+});

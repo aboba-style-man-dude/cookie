@@ -121,28 +121,25 @@ body {
 }
 
 .delCart {
-    background: rgb(247, 197, 197);
+    background: white;
     border-radius: 60px;
     width: 178px;
     height: 58px;
     box-sizing: border-box;
-    /* padding: 14px; */
     text-align: center;
-    /* margin-bottom: 10px; */
     font-size: 20px;
-    color: #0c0a1e;
+    color: #5243F4;
     border: 0;
     outline: none;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-
     position: fixed;
     right: 50px;
     bottom: 50px;
     padding: 5px 10px;
-
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .delPfromCart{
@@ -159,7 +156,7 @@ body {
 }
 
 .delCart:hover{
-    background: rgb(247, 58, 58);
+    background: #f5f5f5;
 }
 
 .delPfromCart:hover{
@@ -283,19 +280,22 @@ body {
 
 }
 
-.cataloglink{
+.cataloglink {
     color: #5243F4;
     font-size: 20px;
     text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
 }
-.cataloglink:hover{
+
+.cataloglink:hover {
     color: rgb(214, 186, 2);
 }
 
 .cart-total {
     position: fixed;
     left: 50px;
-    bottom: 50px;
+    bottom: 80px;
     background: white;
     color: #5243F4;
     padding: 15px 25px;
@@ -303,4 +303,35 @@ body {
     font-size: 20px;
     font-weight: bold;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.orderCartBtn {
+    position: fixed;
+    left: 50px;
+    bottom: 10px;
+    background: white;
+    border-radius: 60px;
+    width: 178px;
+    height: 58px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 20px;
+    color: #5243F4;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+.orderCartBtn.hidden {
+    display: none;
+}
+
+.orderCartBtn:hover {
+    background: #f5f5f5;
 }

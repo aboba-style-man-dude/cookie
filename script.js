@@ -87,9 +87,14 @@ function loadData() { //функция для получения данных и
     return savedData ? JSON.parse(savedData) : [] //проверяет есть ли сохраненные данные
 }
 
+let counter = 1
 const cart = loadData()
 
-
+cart.forEach((item) => {  ///перебирает каждый элемент массива data
+    if (item.id >= counter) { //нужно для того чтобы были разные id,  т.е. не повторялись
+        counter = item.id + 1;
+    }
+});
 // при нажатии В корзину
 
 productsList.addEventListener('click', function(event) {
@@ -105,6 +110,7 @@ productsList.addEventListener('click', function(event) {
         // сохраняем в localStorage
         
         cart.push({
+            id: counter++,
             name: product.name,
             kart: product.kart,
             descr: product.descr,

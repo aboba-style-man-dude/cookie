@@ -266,3 +266,51 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+.about-content {
+    padding: 80px 0;
+}
+
+.about-title {
+    font-family: 'Steppe-ExtraBold', sans-serif;
+    font-size: 60px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.about-text {
+    max-width: 800px;
+    margin: 0 auto 60px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.about-text p {
+    margin-bottom: 20px;
+}
+
+.about-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.feature h3 {
+    font-family: 'Steppe-ExtraBold', sans-serif;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.feature p {
+    font-size: 16px;
+    line-height: 1.5;
+}

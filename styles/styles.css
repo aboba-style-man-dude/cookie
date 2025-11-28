@@ -122,16 +122,20 @@ body {
     padding: 100px 0;
 }
 
+/* Изменения: сетка каталога — колонки растягиваются равномерно */
 .products-items {
     display: grid;
-    grid-template-columns: repeat(3, 384px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 90px 24px;
     margin-top: 110px;
 }
 
+/* Изменения: карточка растягивается на всю высоту */
 .products-item {
     background-color: white;
     color: #5D3427;
+    display: flex;
+    flex-direction: column;
 }
 
 .products-items-image {
@@ -146,8 +150,20 @@ body {
     max-width: 100%;
 }
 
+/* Изменения: контент внутри тоже тянется по высоте */
 .products-items-details {
     padding: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Изменения: текст в описании товара выровнен по ширине */
+.products-item-text {
+    margin-top: 12px;
+    text-align: justify;
+    line-height: 1.4;
+    flex: 1;                 /* чтобы описание занимало свободное место */
 }
 
 .products-items-title {
@@ -225,27 +241,137 @@ body {
 
 /* Тут для формы */
 
+/* Изменения размера окна оформления заказа */
 .formZakaz {
-    display: none; /* скрыто по умолчанию */
     position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%; 
-    overflow: auto; /* позволяет прокручивать если нужно */
-    background-color: rgba(0, 0, 0, 0.4); /* полупрозрачный черный фон */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
+/*  модальное окно строго по центру */
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; 
-    color: black;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px 32px 32px;
+
+    width: min(480px, 92%);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
 }
 
+
+.order-modal-title {
+    font-size: 26px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 22px 0; 
+    color: #3B2F2F;     
+}
+
+
+/*  блок с картинкой печенья и ценой */
+.order-modal-product {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-modal-product-image img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.order-modal-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-modal-product-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.order-modal-product-subinfo {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 14px;
+}
+
+.order-modal-product-qty {
+    color: #5D3427;
+}
+
+.order-modal-product-price {
+    color: #FFA200;
+    font-weight: 700;
+}
+
+/*  стили формы заказа */
+.order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.order-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.order-form-field span {
+    color: #5D3427;
+}
+
+.order-form-field input,
+.order-form-field textarea {
+    border: 1px solid #d3d3d3;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: inherit;
+    outline: none;
+}
+
+.order-form-field input:focus,
+.order-form-field textarea:focus {
+    border-color: #5243F4;
+}
+
+.order-form-submit {
+    margin-top: 10px;
+    width: 100%;
+    background: #5243F4;
+    color: #ffffff;
+    border-radius: 999px;
+    border: none;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order-form-submit:hover {
+    opacity: 0.95;
+}
+
+/* формы */
 .dannie{
     padding: 5px;
     display: grid;
@@ -315,28 +441,58 @@ body {
     line-height: 1.5;
 }
 
+/* Изменения: выравнивание цены и кнопок в карточке товара */
 .products-item-extra {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 16px;
+    margin-top: 24px;
 }
 
 .products-item-info {
-    flex: 1;
+    text-align: center;
 }
 
+.products-items-price {
+    color: rgb(255, 162, 0);
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+/* Изменения: две кнопки в один ряд, по центру */
+.products-item-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    width: 100%;
+}
+
+
+/* Изменения: увеличили кнопки и выровняли текст по центру */
 .button-violet-button,
 .button-violet-button-toCart {
-    margin: 0;
-    flex-shrink: 0;
-    width: 120px;
-    height: 45px;
-    padding: 10px;
-    font-size: 16px;
+    background: #5243F4;
+    border-radius: 60px;
+    width: 210px;
+    height: 64px;
+    box-sizing: border-box;
+    padding: 18px;
+    font-size: 18px;
+    color: white;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* вертикальное выравнивание текста */
 }
+
+.button-violet-button-toCart {
+    margin-top: 0; /* чтобы кнопки были на одной линии */
+}
+
 
 .notification {
     position: fixed;
@@ -360,5 +516,203 @@ body {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+/* Изменения: счетчик за товары в каталоге */
+.cart-button-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cart-btn-minus,
+.cart-btn-plus {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* контейнер для цифры и надписи */
+.cart-btn-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* центрируем по вертикали */
+    line-height: 1.1;
+}
+
+
+.cart-btn-qty {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 2px;    
+}
+
+.cart-btn-text {
+    font-size: 12px;        
+    opacity: 0.75;          
+    text-align: center;
+    white-space: nowrap;    /* не переносим "В корзине" на две строки */
+    margin-top: 2px;
+}
+
+/* === Страница оплаты === */
+
+.payment-body {
+    background-color: #5243F4;
+}
+
+/* контейнер страницы */
+.payment-page {
+    min-height: calc(100vh - 80px); /* с учётом хедера */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px 40px;
+}
+
+/* белая карточка оплаты */
+.payment-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 28px 28px 24px;
+    max-width: 640px;
+    width: 100%;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* шапка карточки */
+.payment-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.payment-check-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #5243F4;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.payment-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #3B2F2F;
+    margin: 0 0 6px;
+}
+
+.payment-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #6d5a5a;
+}
+
+/* блоки с данными заказа и пользователя */
+.payment-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.payment-summary-block {
+    background: #F9F8FF;
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.payment-summary-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5243F4;
+    margin-bottom: 8px;
+}
+
+.payment-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #3B2F2F;
+    margin-bottom: 4px;
+}
+
+.payment-summary-row span:last-child {
+    font-weight: 500;
+}
+
+.payment-summary-total span:last-child {
+    color: #FFA200;
+    font-weight: 700;
+}
+
+/* кнопки оплаты */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.payment-btn {
+    width: 100%;
+    border-radius: 999px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s ease, transform 0.05s ease;
+}
+
+.payment-btn-primary {
+    background: #5243F4;
+    color: #ffffff;
+}
+
+.payment-btn-secondary {
+    background: #ffffff;
+    color: #5243F4;
+    border: 1px solid #D5D1FF;
+}
+
+.payment-btn:hover {
+    opacity: 0.96;
+    transform: translateY(-1px);
+}
+
+/* ссылка назад */
+.payment-footer {
+    text-align: center;
+}
+
+.payment-back-link {
+    font-size: 14px;
+    color: #5243F4;
+    text-decoration: none;
+}
+
+.payment-back-link:hover {
+    text-decoration: underline;
+}
+
+/* адаптив: на широких экранах блоки заказа в две колонки */
+@media (min-width: 640px) {
+    .payment-summary {
+        grid-template-columns: 1fr 1fr;
     }
 }

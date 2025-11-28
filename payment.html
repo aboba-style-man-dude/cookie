@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Оплата заказа — Trendy cookies</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="shortcut icon" href="icon4.png" type="image/x-icon">
+</head>
+<body class="payment-body">
+
+<header class="header">
+    <div class="container">
+        <div class="logo">
+            <img src="images/logo.png" alt="Logo">
+        </div>
+
+        <nav class="menu">
+            <ul class="menu-list">
+                <li class="menu-item"><a href="index.html">Главная</a></li>
+                <li class="menu-item"><a href="allpechenki.html">Каталог</a></li>
+                <li class="menu-item"><a href="about.html">О нас</a></li>
+                <li class="menu-item"><a href="cart.html">Корзина</a></li>
+                <li class="menu-item"><a href="authoriztn.html">Войти в аккаунт</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="payment-page">
+    <div class="payment-card">
+        <div class="payment-card-header">
+            <div class="payment-check-icon">
+                ✓
+            </div>
+            <h1 class="payment-title">Оплата заказа</h1>
+            <p class="payment-subtitle">
+                Остался последний шаг! Проверьте детали и выберите способ оплаты.
+            </p>
+        </div>
+
+        <div class="payment-summary">
+            <div class="payment-summary-block">
+                <div class="payment-summary-title">Ваш заказ</div>
+                <div class="payment-summary-row">
+                    <span>Товар</span>
+                    <span id="paymentProductName">Выбранное печенье</span>
+                </div>
+                <div class="payment-summary-row">
+                    <span>Количество</span>
+                    <span id="paymentProductQty">1 шт.</span>
+                </div>
+                <div class="payment-summary-row payment-summary-total">
+                    <span>Итого к оплате</span>
+                    <span id="paymentProductPrice">20 $</span>
+                </div>
+            </div>
+
+            <div class="payment-summary-block">
+                <div class="payment-summary-title">Данные получателя</div>
+                <div class="payment-summary-row">
+                    <span>Имя</span>
+                    <span id="paymentUserName">—</span>
+                </div>
+                <div class="payment-summary-row">
+                    <span>Адрес</span>
+                    <span id="paymentUserAddress">—</span>
+                </div>
+                <div class="payment-summary-row">
+                    <span>Телефон</span>
+                    <span id="paymentUserPhone">—</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-methods">
+            <button class="payment-btn payment-btn-primary">Оплатить картой</button>
+            <button class="payment-btn payment-btn-secondary">Apple&nbsp;Pay</button>
+            <button class="payment-btn payment-btn-secondary">Google&nbsp;Pay</button>
+        </div>
+
+        <div class="payment-footer">
+            <a href="allpechenki.html" class="payment-back-link">← Вернуться к каталогу</a>
+        </div>
+    </div>
+</main>
+
+<script>
+// Изменения: попытка подтянуть данные из localStorage / переданной формы (пока простая заглушка)
+(function() {
+    try {
+        const savedOrder = JSON.parse(sessionStorage.getItem("lastOrder") || "{}");
+
+        if (savedOrder.productName) {
+            document.getElementById("paymentProductName").textContent = savedOrder.productName;
+        }
+        if (savedOrder.price) {
+            document.getElementById("paymentProductPrice").textContent = savedOrder.price;
+        }
+        if (savedOrder.qty) {
+            document.getElementById("paymentProductQty").textContent = savedOrder.qty + " шт.";
+        }
+        if (savedOrder.name) {
+            document.getElementById("paymentUserName").textContent = savedOrder.name;
+        }
+        if (savedOrder.address) {
+            document.getElementById("paymentUserAddress").textContent = savedOrder.address;
+        }
+        if (savedOrder.phone) {
+            document.getElementById("paymentUserPhone").textContent = savedOrder.phone;
+        }
+    } catch (e) {
+        // тихо игнорируем ошибки, страница всё равно работает как статическая
+    }
+})();
+</script>
+
+</body>
+</html>

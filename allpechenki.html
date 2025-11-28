@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Cookies</title>
@@ -10,6 +10,7 @@
 <img src="images/cookie.png" alt="cookie" class="main-image">
 
 <div class="perValuta" title="Изменить валюту">$</div>
+
 <header class="header">
     <div class="container">
         <div class="logo">
@@ -38,145 +39,212 @@
     </div>
 </header>
 
-
 <section class="products">
     <div class="container">
         <div class="common-title">Выберите печенье</div>
+
         <div class="products-items">
+            <!-- 1. Лучшие друзья -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/1.png" alt="product">
                 </div>
                 <div class="products-items-details">
                     <div class="products-items-title">Лучшие друзья</div>
-                    <div class="products-item-text">Печенье, с которого все началось! Наше фирменное печенье
-                        с шоколадной крошкой и грецкими орехами хрустящее снаружи с достаточно толстой и липкой
-                        серединкой.
+                    <div class="products-item-text">
+                        Печенье, с которого все началось! Наше фирменное печенье
+                        с шоколадной крошкой и грецкими орехами хрустящее снаружи
+                        с достаточно толстой и липкой серединкой.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "20">20 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="20">20 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <!-- Изменения: обёртка для двух кнопок -->
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 2. Шоколадный француз -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/2.png" alt="product">
                 </div>
                 <div class="products-items-details">
                     <div class="products-items-title">Шоколадный француз</div>
-                    <div class="products-item-text">Это печенье, изготовленное из тёмного французского какао
-                        и полусладкой шоколадной стружки, наверняка удовлетворит даже самого заядлого любителя шоколада.
+                    <div class="products-item-text">
+                        Это печенье, изготовленное из тёмного французского какао
+                        и полусладкой шоколадной стружки, наверняка удовлетворит
+                        даже самого заядлого любителя шоколада.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "24">24 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="24">24 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <!-- Изменения: две кнопки в отдельном блоке -->
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 3. Овсянка с изюмом, Сэр! -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/3.png" alt="product">
                 </div>
                 <div class="products-items-details">
-                    <div class="products-items-title">Овсянка с изюмом, Сэр!</div>
-                    <div class="products-item-text">Это сдобное маслянистое печенье весом шесть унций каждое,
-                        золотисто-коричневое снаружи, влажное внутри и наполненное пухлым сладким изюмом.
+                    <div class="products-items-title">Овсянка с изюмом, Сэр!</div>
+                    <div class="products-item-text">
+                        Это сдобное маслянистое печенье весом шесть унций каждое,
+                        золотисто-коричневое снаружи, влажное внутри и наполненное
+                        пухлым сладким изюмом.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "18">18 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="18">18 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 4. Шоколадное наслаждение -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/4.png" alt="product">
                 </div>
                 <div class="products-items-details">
                     <div class="products-items-title">Шоколадное наслаждение</div>
-                    <div class="products-item-text">Идеально хрустящее снаружи и достаточно густое и липкое в центре,
-                        это печенье наполнено полусладкой и тёмной шоколадной стружкой, придающей богатую глубину вкуса.
+                    <div class="products-item-text">
+                        Идеально хрустящее снаружи и достаточно густое и липкое в центре,
+                        это печенье наполнено полусладкой и тёмной шоколадной стружкой,
+                        придающей богатую глубину вкуса.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "24">24 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="24">24 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 5. Арахисовый рай -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/5.png" alt="product">
                 </div>
                 <div class="products-items-details">
-                    <div class="products-items-title">Арахисовый рай</div>
-                    <div class="products-item-text">Сладкое, пикантное и идеально сбалансированное печенье удовлетворяет
-                        тягу любителей арахисового масла и шоколада.
+                    <div class="products-items-title">Арахисовый рай</div>
+                    <div class="products-item-text">
+                        Сладкое, пикантное и идеально сбалансированное печенье
+                        удовлетворяет тягу любителей арахисового масла и шоколада.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "20">20 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="20">20 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 6. Шоколадный ореховый деликатес -->
             <div class="products-item">
                 <div class="products-items-image">
                     <img src="images/6.png" alt="product">
                 </div>
                 <div class="products-items-details">
                     <div class="products-items-title">Шоколадный ореховый деликатес</div>
-                    <div class="products-item-text">Наша фирменная рецептура печенья с шоколадными крошками и грецкими
-                        орехами гарантирует незабываемый вкусовой опыт. Каждое печенье хрустит снаружи, но раскрывает
-                        внутри нежную сердцевину.
+                    <div class="products-item-text">
+                        Наша фирменная рецептура печенья с шоколадными крошками и грецкими
+                        орехами гарантирует незабываемый вкусовой опыт. Каждое печенье
+                        хрустит снаружи, но раскрывает внутри нежную сердцевину.
                     </div>
                     <div class="products-item-extra">
                         <div class="products-item-info">
-                            <div class="products-items-price" base-price = "18">18 $</div>
-                            <div class="products-items-weight">2 шт./ 200 гр.</div>
+                            <div class="products-items-price" base-price="18">18 $</div>
+                            <div class="products-items-weight">2 шт./ 200 гр.</div>
                         </div>
-                        <button class="button-violet-button">Заказать</button>
-                        <button class="button-violet-button-toCart">В корзину</button>
+                        <div class="products-item-buttons">
+                            <button class="button-violet-button">Купить сейчас</button>
+                            <button class="button-violet-button-toCart">В корзину</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
 
-<div  class="formZakaz" style="display: none;">
+<!-- новый дизайн окна оформления заказа -->
+<div class="formZakaz" id="orderModal" style="display: none;">
     <div class="modal-content">
-        <span id="closeButton" class="close">&times;</span> <!-- кнопка закрыть крестик -->
-        <h2>Оформление заказа</h2>
-        <p id="orderProductName"></p> <!-- тут название товара будет -->
-        <form id="orderForm" class="dannie">
-            <label for="name">Имя:</label>
-            <input type="text" id="name" name="name" required>
-            <label for="address">Адрес:</label>
-            <input type="text" id="address" name="address" required>
-            <input type="submit" value="Подтвердить заказ">
+        <span id="closeButton" class="close">&times;</span>
+
+        <h2 class="order-modal-title">Оформление заказа</h2>
+
+        <div class="order-modal-product">
+            <div class="order-modal-product-image">
+                <img id="orderProductImage" src="" alt="Печенье">
+            </div>
+            <div class="order-modal-product-info">
+                <div id="orderProductTitle" class="order-modal-product-name"></div>
+                <div class="order-modal-product-subinfo">
+                    <span id="orderProductQty" class="order-modal-product-qty">1 шт.</span>
+                    <span id="orderProductPrice" class="order-modal-product-price"></span>
+                </div>
+            </div>
+        </div>
+
+        <form id="orderForm" class="order-form" >
+            <label class="order-form-field">
+                <span>Имя</span>
+                <input type="text" id="name" name="name" required>
+            </label>
+
+            <label class="order-form-field">
+                <span>Адрес</span>
+                <input type="text" id="address" name="address" required>
+            </label>
+
+            <label class="order-form-field">
+                <span>Телефон</span>
+                <input type="tel" id="phone" name="phone" required>
+            </label>
+
+            <label class="order-form-field">
+                <span>Комментарий к заказу</span>
+                <textarea id="comment" name="comment" rows="3" placeholder="Например: без орехов, позвонить курьеру заранее"></textarea>
+            </label>
+
+            <button type="submit" class="order-form-submit">Подтвердить заказ</button>
         </form>
     </div>
 </div>
+
 
 <div class="notification" id="notification"></div>
 

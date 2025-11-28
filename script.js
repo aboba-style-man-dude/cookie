@@ -1,17 +1,16 @@
-//Изменения: полный актуальный script.js для allpechenki.html
+//теперь работает с Express-сервером (без localStorage)
 
 const productsList = document.querySelector('.products-items'); // все товары
 
-//для оформления заказа
-const formZakaz = document.getElementsByClassName('formZakaz')[0]; // окно формы
-const closeButton = document.getElementById('closeButton');        // кнопка закрытия
+// для оформления заказа (модалка "Купить сейчас")
+const formZakaz = document.getElementsByClassName('formZakaz')[0];
+const closeButton = document.getElementById('closeButton');
 
 const orderProductImage = document.getElementById('orderProductImage');
 const orderProductTitle = document.getElementById('orderProductTitle');
 const orderProductPrice = document.getElementById('orderProductPrice');
 const orderProductQty = document.getElementById('orderProductQty');
 const orderForm = document.getElementById('orderForm');
-
 
 const changeValuta = document.getElementsByClassName('perValuta')[0];
 const prices = document.getElementsByClassName('products-items-price');
@@ -61,7 +60,7 @@ const data = [
     }
 ];
 
-//Изменения: объявили переменную нормально, а не неявно
+// текущий символ валюты
 let newV1 = "$";
 
 changeValuta.addEventListener('click', function (e) {
@@ -82,22 +81,6 @@ changeValuta.addEventListener('click', function (e) {
     newV1 = newV;
 });
 
-// функция для получения данных из localStorage
-function loadData() {
-    const savedData = localStorage.getItem('cart');
-    return savedData ? JSON.parse(savedData) : [];
-}
-
-let counter = 1;
-const cart = loadData();
-
-cart.forEach((item) => {
-    // нужно для того, чтобы были разные id, т.е. не повторялись
-    if (item.id >= counter) {
-        counter = item.id + 1;
-    }
-});
-
 // уведомление "добавлено в корзину"
 function showNotification(message) {
     const notification = document.getElementById('notification');
@@ -111,33 +94,50 @@ function showNotification(message) {
     }, 3000);
 }
 
-// при нажатии "В корзину"
+// ================== КАТАЛОГ → ДОБАВЛЕНИЕ В КОРЗИНУ ЧЕРЕЗ EXPRESS ==================
+
 productsList.addEventListener('click', function (event) {
-    if (event.target && event.target.classList.contains('button-violet-button-toCart')) {
-        const button = event.target;
-        const details = button.closest('.products-items-details');
-        if (!details) return;
+    // ищем кнопку "В корзину" (даже если кликнули по внутреннему span)
+    const button = event.target.closest('.button-violet-button-toCart');
+    if (!button) return;
 
-        const productName = details.querySelector('.products-items-title').innerText;
+    event.preventDefault();
 
-        const product = data.find(item => item.name === productName);
-        if (!product) return;
+    const details = button.closest('.products-items-details');
+    if (!details) return;
 
-        cart.push({
-            id: counter++,
+    const productName = details.querySelector('.products-items-title').innerText;
+    const product = data.find(item => item.name === productName);
+    if (!product) return;
+
+    // пока что всегда добавляем 1 набор (2 шт / 200 гр)
+    const qtyToAdd = 1;
+
+    fetch('/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // важно для сессий
+        body: JSON.stringify({
             name: product.name,
             kart: product.kart,
             descr: product.descr,
             pr: product.pr,
-            we: product.we
+            we: product.we,
+            qty: qtyToAdd
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Корзина на сервере:', data);
+            showNotification(`${productName} добавлен в корзину`);
+        })
+        .catch(err => {
+            console.error('Ошибка при добавлении в корзину', err);
         });
-        localStorage.setItem('cart', JSON.stringify(cart));
-
-        showNotification(`${productName} добавлен в корзину`);
-    }
 });
 
-// при нажатии "Купить сейчас"
+// ================== "Купить сейчас" — модалка ==================
+
 productsList.addEventListener('click', function (event) {
     if (event.target && event.target.classList.contains('button-violet-button')) {
         const button = event.target;
@@ -145,16 +145,13 @@ productsList.addEventListener('click', function (event) {
         if (!details) return;
 
         const productName = details.querySelector('.products-items-title').innerText;
-
         const product = data.find(item => item.name === productName);
         if (!product) return;
 
-        // заполняем данные в модалке
         orderProductTitle.textContent = product.name;
         orderProductImage.src = product.kart;
         orderProductImage.alt = product.name;
 
-        // используем текущую валюту newV1
         orderProductPrice.textContent = `${product.pr} ${newV1}`;
         orderProductQty.textContent = '1 шт.';
 
@@ -162,110 +159,24 @@ productsList.addEventListener('click', function (event) {
     }
 });
 
-
-// закрытие формы при нажатии на крестик
 closeButton.addEventListener('click', function () {
     formZakaz.style.display = 'none';
 });
 
-
-// закрытие формы при нажатии вне его области
 window.addEventListener('click', function (event) {
     if (event.target === formZakaz) {
         formZakaz.style.display = 'none';
     }
 });
 
-//переход на страницу оплаты после подтверждения заказа
 orderForm.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    // здесь позже можно будет собрать данные и отправить на сервер (Express)
-    window.location.href = 'payment.html'; // временная страница оплаты
+    // позже можно будет реально отправлять заказ на backend
+    window.location.href = 'payment.html';
 });
 
+// ================== АНИМАЦИЯ КНОПКИ "В КОРЗИНУ" (как было) ==================
 
-
-// создание карточки печенья (если нужно добавлять динамически)
-function createCookie(obj) {
-    const pech = document.createElement('div');
-    pech.classList.add("products-item");
-
-    // изображение
-    const img = document.createElement('img');
-    img.src = obj.kart;
-    img.alt = "cookie";
-
-    const divImg = document.createElement('div');
-    divImg.classList.add("products-items-image");
-    divImg.appendChild(img);
-
-    // детали
-    const details = document.createElement('div');
-    details.classList.add("products-items-details");
-
-    const prTitleJS = document.createElement('div');
-    prTitleJS.classList.add("products-items-title");
-    prTitleJS.innerText = obj.name;
-
-    const prTextJS = document.createElement('div');
-    prTextJS.classList.add("products-item-text");
-    prTextJS.innerText = obj.descr;
-
-    // блок с ценой и кнопками
-    const prExstraJS = document.createElement('div');
-    prExstraJS.classList.add("products-item-extra");
-
-    const prExstraInfJS = document.createElement('div');
-    prExstraInfJS.classList.add("products-item-info");
-
-    const prExstraPriceJS = document.createElement('div');
-    prExstraPriceJS.classList.add("products-items-price");
-    prExstraPriceJS.innerText = obj.pr + newV1;
-    prExstraPriceJS.setAttribute('base-price', obj.pr);
-
-    const prExstraWeightJS = document.createElement('div');
-    prExstraWeightJS.classList.add("products-items-weight");
-    prExstraWeightJS.innerText = obj.we;
-
-    prExstraInfJS.appendChild(prExstraPriceJS);
-    prExstraInfJS.appendChild(prExstraWeightJS);
-
-    //Изменения: обёртка для двух кнопок, как в HTML
-    const buttonsWrap = document.createElement('div');
-    buttonsWrap.classList.add("products-item-buttons");
-
-    const prBtnZ = document.createElement('button');
-    prBtnZ.classList.add("button-violet-button");
-    prBtnZ.innerText = "Купить сейчас";
-
-    const prBtnCart = document.createElement('button');
-    prBtnCart.classList.add("button-violet-button-toCart");
-    prBtnCart.innerText = "В корзину";
-
-    buttonsWrap.appendChild(prBtnZ);
-    buttonsWrap.appendChild(prBtnCart);
-
-    prExstraJS.appendChild(prExstraInfJS);
-    prExstraJS.appendChild(buttonsWrap);
-
-    details.appendChild(prTitleJS);
-    details.appendChild(prTextJS);
-    details.appendChild(prExstraJS);
-
-    pech.appendChild(divImg);
-    pech.appendChild(details);
-
-    return pech;
-}
-
-// (если нужно генерировать товары из data)
-// for (let item of data) {
-//     const tmpEl = createCookie(item);
-//     productsList.appendChild(tmpEl);
-// }
-
-//Изменения: логика анимации и счётчика для кнопки "В корзину" на странице каталога
 document.addEventListener('DOMContentLoaded', () => {
     const cartButtons = document.querySelectorAll('.button-violet-button-toCart');
 
@@ -274,9 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
         button.dataset.init = 'true';
 
         button.addEventListener('click', (e) => {
+            // Express уже ловит клик через делегирование выше
             e.preventDefault();
 
-            // если кнопка уже в режиме "В корзине" — по клику просто +1
+            // если кнопка уже в режиме "В корзине" — по клику просто +1 (визуально)
             if (button.classList.contains('in-cart')) {
                 const qtyEl = button.querySelector('.cart-btn-qty');
                 let qty = parseInt(qtyEl.textContent, 10) || 1;

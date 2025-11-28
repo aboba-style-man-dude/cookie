@@ -1,4 +1,4 @@
-//Изменения (cart.js): группировка одинаковых товаров, счётчик количества, доставка и корректный расчёт суммы
+//теперь корзина хранится на сервере 
 
 const cartItemsContainer = (document.getElementsByClassName('cart__list'))[0];
 const delInCart = (document.getElementsByClassName('delCart'))[0];
@@ -9,54 +9,54 @@ const closeButton = document.getElementById('closeButton');
 const orderProductName = document.getElementById('orderProductName');
 const orderCartBtn = document.getElementsByClassName('orderCartBtn')[0];
 
-function loadData() { //функция для получения данных из loсаlStorage
-    const savedData = localStorage.getItem('cart'); 
-    return savedData ? JSON.parse(savedData) : [];
+let cart = [];          // корзина приходит с сервера
+let newV1 = "$";        // символ валюты
+let currentRate = 1;    // 1 для $, 98 для ₽
+
+// загрузка корзины с сервера
+function loadCartFromServer() {
+    fetch('/api/cart', {
+        method: 'GET',
+        credentials: 'include'
+    })
+        .then(res => res.json())
+        .then(data => {
+            cart = Array.isArray(data) ? data : [];
+            render();
+        })
+        .catch(err => {
+            console.error('Ошибка при загрузке корзины', err);
+            cart = [];
+            render();
+        });
 }
 
-const cart = loadData();
-console.log(cart);
-
-//Изменения: текущая валюта и курс
-let newV1 = "$";      // символ
-let currentRate = 1;  // 1 для $, 98 для ₽
-
-
-// группируем корзину и учитываем qty, если оно уже есть в item
-function getCartGroups() {
-    const map = new Map();
-
-    cart.forEach(item => {
-        const key = item.name; // считаем, что имя печеньки уникально
-        const itemQty = item.qty ? Number(item.qty) : 1; // если в item уже есть qty — используем его
-
-        if (!map.has(key)) {
-            map.set(key, { ...item, qty: 0 });
-        }
-        map.get(key).qty += itemQty;
-    });
-
-    return Array.from(map.values()); // [{ name, pr, we, kart, descr, qty }]
-}
-
-
-//Изменения: сумма в базовой валюте ($) без учёта доставки
+// сумма в базовой валюте ($) без учёта доставки
 function getCartBaseSum() {
-    const groups = getCartGroups();
     let sm = 0;
-    groups.forEach(item => {
-        sm += Number(item.pr) * item.qty;
+    cart.forEach(item => {
+        const price = Number(item.pr) || 0;
+        const qty = Number(item.qty) || 1;
+        sm += price * qty;
     });
     return sm;
 }
 
-//Очистить корзину полностью
+// Очистить корзину полностью
 delInCart.addEventListener('click', function () {
-    localStorage.clear();
-    location.reload();
+    fetch('/api/cart/clear', {
+        method: 'POST',
+        credentials: 'include'
+    })
+        .then(res => res.json())
+        .then(() => {
+            cart = [];
+            render();
+        })
+        .catch(err => console.error('Ошибка при очистке корзины', err));
 });
 
-//Изменения: переключение валюты (обновляем знак и курс)
+// переключение валюты (обновляем знак и курс)
 changeValuta.addEventListener('click', function (e) {
     const currentV = e.target.innerText;
 
@@ -71,18 +71,18 @@ changeValuta.addEventListener('click', function (e) {
     currentRate = c;
     e.target.innerText = newV;
 
-    // обновляем цену в карточках
+    // обновляем цены в карточках
     const prices = document.getElementsByClassName('products-items-price');
     for (let i = 0; i < prices.length; i++) {
-        const basePrice = Number(prices[i].getAttribute('base-price') || 0);
-        prices[i].innerText = "Цена: " + String(Math.round(basePrice * currentRate)) + newV1;
+        const basePriceTotal = Number(prices[i].getAttribute('base-price') || 0);
+        prices[i].innerText = "Цена: " + String(Math.round(basePriceTotal * currentRate)) + " " + newV1;
     }
 
     // обновляем итог
     updateTotal();
 });
 
-//Изменения: создать карточку позиции в корзине (уже сгруппированную, с qty)
+// создать карточку позиции в корзине
 function createPosition(obj) {
     const itemDiv = document.createElement('div');
     itemDiv.classList.add('cart-item');
@@ -100,20 +100,26 @@ function createPosition(obj) {
     const positionDescr = document.createElement('p');
     positionDescr.innerText = obj.descr;
 
-    // количество умножаем на цену
-    const totalPrice = Math.round(obj.pr * obj.qty * currentRate);
+    const pricePerOne = Number(obj.pr) || 0;
+    const qty = Number(obj.qty) || 1;
+    const basePriceTotal = pricePerOne * qty; // базовая сумма в $
+    const displayPrice = Math.round(basePriceTotal * currentRate);
 
-    // вес рассчитываем
-    const count = obj.qty * 2; // было "2 шт"
-    const grams = obj.qty * 200; // было "200 гр"
-
+    // цена
     const positionPrice = document.createElement('div');
     positionPrice.classList.add("products-items-price");
-    positionPrice.innerText = `Цена: ${totalPrice} ${newV1}`;
+    positionPrice.innerText = `Цена: ${displayPrice} ${newV1}`;
+    positionPrice.setAttribute('base-price', basePriceTotal);
+
+    // вес: считаем, что 1 "позиция" = 2 шт / 200 гр
+    const baseCount = 2;
+    const baseGrams = 200;
+    const totalCount = baseCount * qty;
+    const totalGrams = baseGrams * qty;
 
     const positionWeight = document.createElement('p');
     positionWeight.classList.add("cart-item-weight");
-    positionWeight.innerText = `${count} шт / ${grams} гр`;
+    positionWeight.innerText = `${totalCount} шт / ${totalGrams} гр`;
 
     infoDiv.appendChild(positionTitle);
     infoDiv.appendChild(positionDescr);
@@ -134,7 +140,7 @@ function createPosition(obj) {
         deleteByName(obj.name);
     });
 
-    //Изменения: счётчик количества внизу карточки
+    // счётчик количества
     const counter = document.createElement('div');
     counter.classList.add('cart-item-counter');
 
@@ -144,7 +150,7 @@ function createPosition(obj) {
 
     const qtySpan = document.createElement('span');
     qtySpan.classList.add('counter-value');
-    qtySpan.innerText = obj.qty;
+    qtySpan.innerText = qty;
 
     const plusBtn = document.createElement('button');
     plusBtn.classList.add('counter-btn', 'counter-plus');
@@ -154,13 +160,12 @@ function createPosition(obj) {
     counter.appendChild(qtySpan);
     counter.appendChild(plusBtn);
 
-    // footer карточки: слева мусорка, по центру счётчик
+    // футер: мусорка + счётчик
     const footer = document.createElement('div');
     footer.classList.add('cart-item-footer');
     footer.appendChild(btnDelPrfromCart);
     footer.appendChild(counter);
 
-    // обработчики + / -
     plusBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         changeQty(obj.name, +1);
@@ -178,39 +183,39 @@ function createPosition(obj) {
     return itemDiv;
 }
 
-//Изменения: сохраняем корзину и перерисовываем
-function syncData() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    render();
-}
-
-//Изменения: изменить количество по имени товара (delta = +1 или -1)
+// изменить количество товара на сервере
 function changeQty(name, delta) {
-    if (delta > 0) {
-        const sample = cart.find(item => item.name === name);
-        if (sample) {
-            cart.push({ ...sample, id: Date.now() });
-        }
-    } else if (delta < 0) {
-        const index = cart.findIndex(item => item.name === name);
-        if (index !== -1) {
-            cart.splice(index, 1);
-        }
-    }
-    syncData();
+    fetch('/api/cart/change-qty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, delta })
+    })
+        .then(res => res.json())
+        .then(data => {
+            cart = Array.isArray(data) ? data : [];
+            render();
+        })
+        .catch(err => console.error('Ошибка при изменении количества', err));
 }
 
-//Изменения: удалить товар полностью из корзины (все экземпляры)
+// удалить товар полностью
 function deleteByName(name) {
-    for (let i = cart.length - 1; i >= 0; i--) {
-        if (cart[i].name === name) {
-            cart.splice(i, 1);
-        }
-    }
-    syncData();
+    fetch('/api/cart/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name })
+    })
+        .then(res => res.json())
+        .then(data => {
+            cart = Array.isArray(data) ? data : [];
+            render();
+        })
+        .catch(err => console.error('Ошибка при удалении товара', err));
 }
 
-//Изменения: обновить блок с итоговой суммой с учётом доставки
+// обновить блок "Итого к оплате"
 function updateTotal() {
     const base = getCartBaseSum();          // сумма товаров в $
     const productsSumDisplay = Math.round(base * currentRate);
@@ -237,23 +242,19 @@ function updateTotal() {
     totalDiv.innerText = `Итого к оплате: ${totalDisplay} ${newV1}${deliveryText}`;
 }
 
-//Изменения: основной рендер корзины
+// основной рендер корзины
 function render() {
     const orderCartBtn = document.querySelector('.orderCartBtn');
 
-    // если корзина пустая
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = "";
         cartItemsContainer.classList.add('cart__list_empty');
 
-        // скрываем кнопку "Заказать все"
         orderCartBtn.classList.add('hidden');
 
-        // убираем блок "Итого к оплате", если он был
         const totalDiv = document.querySelector('.cart-total');
         if (totalDiv) totalDiv.remove();
 
-        // общий контейнер для сообщения и ссылки
         const emptyBlock = document.createElement('div');
         emptyBlock.classList.add('cart__list_nothing');
 
@@ -276,9 +277,7 @@ function render() {
 
         cartItemsContainer.innerHTML = "";
 
-        // рисуем сгруппированные товары
-        const groups = getCartGroups();
-        groups.forEach(item => {
+        cart.forEach(item => {
             const itemDiv = createPosition(item);
             cartItemsContainer.appendChild(itemDiv);
         });
@@ -287,9 +286,7 @@ function render() {
     }
 }
 
-render();
-
-//Изменения: обработчик кнопки "Заказать всё" — показываем сумму с учётом выбранной валюты
+// кнопка "Заказать всё"
 orderCartBtn.addEventListener('click', function () {
     const base = getCartBaseSum();
     const productsSumDisplay = Math.round(base * currentRate);
@@ -300,28 +297,39 @@ orderCartBtn.addEventListener('click', function () {
     formZakaz.style.display = 'block';
 });
 
-// Закрытие формы при нажатии на крестик
+// закрытие формы при нажатии на крестик
 closeButton.addEventListener('click', function () {
     formZakaz.style.display = 'none';
 });
 
-// Закрытие формы при нажатии вне её области
+// закрытие формы при клике вне
 window.addEventListener('click', function (event) {
     if (event.target === formZakaz) {
         formZakaz.style.display = 'none';
     }
 });
 
-// Обработка отправки формы (как было, пока без Express)
+// отправка формы заказа
 document.getElementById('orderForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const name = document.getElementById('name').value;
     const address = document.getElementById('address').value;
 
     alert(`Заказ оформлен!\nИмя: ${name}\nАдрес: ${address}`);
-    formZakaz.style.display = 'none';
 
-    // Очистка корзины после заказа
-    localStorage.clear();
-    location.reload();
+    // очищаем корзину на сервере
+    fetch('/api/cart/clear', {
+        method: 'POST',
+        credentials: 'include'
+    })
+        .then(res => res.json())
+        .then(() => {
+            cart = [];
+            render();
+            formZakaz.style.display = 'none';
+        })
+        .catch(err => console.error('Ошибка при очистке после заказа', err));
 });
+
+// загружаем корзину при открытии страницы
+document.addEventListener('DOMContentLoaded', loadCartFromServer);

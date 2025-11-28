@@ -290,21 +290,41 @@ body {
 
 }
 
+.cart-item p {
+    text-align: justify;
+}
+
+.products-items-price {
+    text-align: center;
+    width: 100%;
+}
+
+.cart-item p.cart-item-weight {
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+
+
 /*Изменения: футер карточки в корзине — мусорка + счётчик*/
 .cart-item-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* мусорка слева, счётчик справа */
     align-items: center;
-    margin-top: 12px;
+    width: 100%;
+    position: relative;
 }
+
 
 /* счётчик количества */
 .cart-item-counter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .counter-btn {

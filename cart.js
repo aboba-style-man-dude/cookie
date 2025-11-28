@@ -21,20 +21,24 @@ console.log(cart);
 let newV1 = "$";      // символ
 let currentRate = 1;  // 1 для $, 98 для ₽
 
-//Изменения: вспомогательная функция — сгруппировать корзину по названию товара
+
+// группируем корзину и учитываем qty, если оно уже есть в item
 function getCartGroups() {
     const map = new Map();
 
     cart.forEach(item => {
-        const key = item.name;          // считаем, что имя печеньки уникально
+        const key = item.name; // считаем, что имя печеньки уникально
+        const itemQty = item.qty ? Number(item.qty) : 1; // если в item уже есть qty — используем его
+
         if (!map.has(key)) {
             map.set(key, { ...item, qty: 0 });
         }
-        map.get(key).qty += 1;
+        map.get(key).qty += itemQty;
     });
 
-    return Array.from(map.values());    // массив объектов { name, pr, we, kart, descr, qty }
+    return Array.from(map.values()); // [{ name, pr, we, kart, descr, qty }]
 }
+
 
 //Изменения: сумма в базовой валюте ($) без учёта доставки
 function getCartBaseSum() {
@@ -96,14 +100,20 @@ function createPosition(obj) {
     const positionDescr = document.createElement('p');
     positionDescr.innerText = obj.descr;
 
+    // количество умножаем на цену
+    const totalPrice = Math.round(obj.pr * obj.qty * currentRate);
+
+    // вес рассчитываем
+    const count = obj.qty * 2; // было "2 шт"
+    const grams = obj.qty * 200; // было "200 гр"
+
     const positionPrice = document.createElement('div');
     positionPrice.classList.add("products-items-price");
-    positionPrice.innerText = "Цена: " + Math.round(obj.pr * currentRate) + newV1;
-    // цена за одну штуку в базе ($) — нужна для конвертации
-    positionPrice.setAttribute('base-price', obj.pr);
+    positionPrice.innerText = `Цена: ${totalPrice} ${newV1}`;
 
     const positionWeight = document.createElement('p');
-    positionWeight.innerText = obj.we;
+    positionWeight.classList.add("cart-item-weight");
+    positionWeight.innerText = `${count} шт / ${grams} гр`;
 
     infoDiv.appendChild(positionTitle);
     infoDiv.appendChild(positionDescr);

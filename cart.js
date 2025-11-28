@@ -1,9 +1,8 @@
-const cartItemsContainer = (document.getElementsByClassName('cart__list'))[0];
-const delInCart = (document.getElementsByClassName('delCart'))[0]
-// получение данных из localStorage
-// const cart = [JSON.parse(localStorage.getItem('cart'))] || [];
+//Изменения (cart.js): группировка одинаковых товаров, счётчик количества, доставка и корректный расчёт суммы
 
-const changeValuta = document.getElementsByClassName('perValuta')[0]
+const cartItemsContainer = (document.getElementsByClassName('cart__list'))[0];
+const delInCart = (document.getElementsByClassName('delCart'))[0];
+const changeValuta = document.getElementsByClassName('perValuta')[0];
 
 const formZakaz = document.getElementsByClassName('formZakaz')[0];
 const closeButton = document.getElementById('closeButton');
@@ -11,218 +10,307 @@ const orderProductName = document.getElementById('orderProductName');
 const orderCartBtn = document.getElementsByClassName('orderCartBtn')[0];
 
 function loadData() { //функция для получения данных из loсаlStorage
-    const savedData = localStorage.getItem('cart') //обращается к localStorage и пытается получить данные, сохраненные под ключом 'cart'
-    return savedData ? JSON.parse(savedData) : [] //проверяет есть ли сохраненные данные
+    const savedData = localStorage.getItem('cart'); 
+    return savedData ? JSON.parse(savedData) : [];
 }
 
-const cart = loadData()
-
-// console.log(cart[0].name);
+const cart = loadData();
 console.log(cart);
-//очистить корзину
-delInCart.addEventListener('click', function(){
-    localStorage.clear() // удаляем данные из localStorage
-    location.reload()
-})
 
-newV1="$"
-changeValuta.addEventListener('click', function(e) {
-    const prices = document.getElementsByClassName('products-items-price')
-    const currentV = e.target.innerText
+//Изменения: текущая валюта и курс
+let newV1 = "$";      // символ
+let currentRate = 1;  // 1 для $, 98 для ₽
 
-    let newV = "$"
-    let c = 1
+//Изменения: вспомогательная функция — сгруппировать корзину по названию товара
+function getCartGroups() {
+    const map = new Map();
 
-    if (currentV === "$"){
-        newV = "₽"
-        c = 98
-    }
-    e.target.innerText = newV
-
-    for (let i = 0; i < prices.length; i++){
-    
-    
-    prices[i].innerText = String(Number(prices[i].getAttribute("base-price"))*c)+`${newV}`
-    }
-    newV1=newV
-})
-
-// отображение печенек в корзине
-
-
-
-function createPosition(obj){
-    const itemDiv = document.createElement('div')
-    itemDiv.classList.add('cart-item')
-
-    const imgDel = document.createElement('img')
-    imgDel.src = "images/icons8-trash-30.png"
-    imgDel.alt = "Удалить из корзины"
-    const btnDelPrfromCart = document.createElement('button')
-    btnDelPrfromCart.classList.add("delPfromCart")
-    btnDelPrfromCart.appendChild(imgDel)
-
-    btnDelPrfromCart.addEventListener('click', (event)=> {
-        event.stopPropagation();
-        deleteById(obj.id);
-        console.log(cart);
-        // console.log(data);
-        
-
-    })
-
-    const imgPthshnInCart = document.createElement('img')
-    imgPthshnInCart.classList.add("products-items-image")
-    imgPthshnInCart.src = obj.kart
-    imgPthshnInCart.alt = obj.name
-
-    const infoDiv = document.createElement('div')
-
-    const positionTitle = document.createElement('h3')
-    positionTitle.innerText = obj.name
-
-    const positionDescr = document.createElement('p')
-    positionDescr.innerText = obj.descr
-
-    const positionPrice = document.createElement('div')
-    positionPrice.classList.add("products-items-price")
-    positionPrice.innerText = "Цена: " + obj.pr +newV1
-    positionPrice.setAttribute('base-price', obj.pr)
-
-    const positionWeight = document.createElement('p')
-    positionWeight.innerText = obj.we
-
-
-
-    infoDiv.appendChild(positionTitle)
-    infoDiv.appendChild(positionDescr)
-    infoDiv.appendChild(positionPrice)
-    infoDiv.appendChild(positionWeight)
-
-    
-    itemDiv.appendChild(imgPthshnInCart)
-    
-    itemDiv.appendChild(infoDiv)
-    itemDiv.appendChild(btnDelPrfromCart)
-
-    return itemDiv
-}
-
-function syncData(){//функция которая сохраненяет текущее состояние данных
-    localStorage.setItem('cart', JSON.stringify(cart))
-    render()
-}
-
-function deleteById(PrId){
-    const index = cart.findIndex(item => item.id === PrId)
-    if (index !== -1) { 
-        cart.splice(index, 1) //Если задача найдена, она удаляется из массива
-        syncData()
-        render()
-    }
-}
-
-
-
-function sumInCart(){
-    let sm = 0
     cart.forEach(item => {
-        sm+=Number(item.pr)
-    })
-    let smSTR = String(sm)
-    return smSTR
+        const key = item.name;          // считаем, что имя печеньки уникально
+        if (!map.has(key)) {
+            map.set(key, { ...item, qty: 0 });
+        }
+        map.get(key).qty += 1;
+    });
+
+    return Array.from(map.values());    // массив объектов { name, pr, we, kart, descr, qty }
 }
 
-function render(){
+//Изменения: сумма в базовой валюте ($) без учёта доставки
+function getCartBaseSum() {
+    const groups = getCartGroups();
+    let sm = 0;
+    groups.forEach(item => {
+        sm += Number(item.pr) * item.qty;
+    });
+    return sm;
+}
+
+//Очистить корзину полностью
+delInCart.addEventListener('click', function () {
+    localStorage.clear();
+    location.reload();
+});
+
+//Изменения: переключение валюты (обновляем знак и курс)
+changeValuta.addEventListener('click', function (e) {
+    const currentV = e.target.innerText;
+
+    let newV = "$";
+    let c = 1;
+
+    if (currentV === "$") {
+        newV = "₽";
+        c = 98;
+    }
+    newV1 = newV;
+    currentRate = c;
+    e.target.innerText = newV;
+
+    // обновляем цену в карточках
+    const prices = document.getElementsByClassName('products-items-price');
+    for (let i = 0; i < prices.length; i++) {
+        const basePrice = Number(prices[i].getAttribute('base-price') || 0);
+        prices[i].innerText = "Цена: " + String(Math.round(basePrice * currentRate)) + newV1;
+    }
+
+    // обновляем итог
+    updateTotal();
+});
+
+//Изменения: создать карточку позиции в корзине (уже сгруппированную, с qty)
+function createPosition(obj) {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('cart-item');
+
+    const imgPthshnInCart = document.createElement('img');
+    imgPthshnInCart.classList.add("products-items-image");
+    imgPthshnInCart.src = obj.kart;
+    imgPthshnInCart.alt = obj.name;
+
+    const infoDiv = document.createElement('div');
+
+    const positionTitle = document.createElement('h3');
+    positionTitle.innerText = obj.name;
+
+    const positionDescr = document.createElement('p');
+    positionDescr.innerText = obj.descr;
+
+    const positionPrice = document.createElement('div');
+    positionPrice.classList.add("products-items-price");
+    positionPrice.innerText = "Цена: " + Math.round(obj.pr * currentRate) + newV1;
+    // цена за одну штуку в базе ($) — нужна для конвертации
+    positionPrice.setAttribute('base-price', obj.pr);
+
+    const positionWeight = document.createElement('p');
+    positionWeight.innerText = obj.we;
+
+    infoDiv.appendChild(positionTitle);
+    infoDiv.appendChild(positionDescr);
+    infoDiv.appendChild(positionPrice);
+    infoDiv.appendChild(positionWeight);
+
+    // кнопка-мусорка (удалить все такие товары)
+    const imgDel = document.createElement('img');
+    imgDel.src = "images/icons8-trash-30.png";
+    imgDel.alt = "Удалить из корзины";
+
+    const btnDelPrfromCart = document.createElement('button');
+    btnDelPrfromCart.classList.add("delPfromCart");
+    btnDelPrfromCart.appendChild(imgDel);
+
+    btnDelPrfromCart.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteByName(obj.name);
+    });
+
+    //Изменения: счётчик количества внизу карточки
+    const counter = document.createElement('div');
+    counter.classList.add('cart-item-counter');
+
+    const minusBtn = document.createElement('button');
+    minusBtn.classList.add('counter-btn', 'counter-minus');
+    minusBtn.innerText = '−';
+
+    const qtySpan = document.createElement('span');
+    qtySpan.classList.add('counter-value');
+    qtySpan.innerText = obj.qty;
+
+    const plusBtn = document.createElement('button');
+    plusBtn.classList.add('counter-btn', 'counter-plus');
+    plusBtn.innerText = '+';
+
+    counter.appendChild(minusBtn);
+    counter.appendChild(qtySpan);
+    counter.appendChild(plusBtn);
+
+    // footer карточки: слева мусорка, по центру счётчик
+    const footer = document.createElement('div');
+    footer.classList.add('cart-item-footer');
+    footer.appendChild(btnDelPrfromCart);
+    footer.appendChild(counter);
+
+    // обработчики + / -
+    plusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeQty(obj.name, +1);
+    });
+
+    minusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeQty(obj.name, -1);
+    });
+
+    itemDiv.appendChild(imgPthshnInCart);
+    itemDiv.appendChild(infoDiv);
+    itemDiv.appendChild(footer);
+
+    return itemDiv;
+}
+
+//Изменения: сохраняем корзину и перерисовываем
+function syncData() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    render();
+}
+
+//Изменения: изменить количество по имени товара (delta = +1 или -1)
+function changeQty(name, delta) {
+    if (delta > 0) {
+        const sample = cart.find(item => item.name === name);
+        if (sample) {
+            cart.push({ ...sample, id: Date.now() });
+        }
+    } else if (delta < 0) {
+        const index = cart.findIndex(item => item.name === name);
+        if (index !== -1) {
+            cart.splice(index, 1);
+        }
+    }
+    syncData();
+}
+
+//Изменения: удалить товар полностью из корзины (все экземпляры)
+function deleteByName(name) {
+    for (let i = cart.length - 1; i >= 0; i--) {
+        if (cart[i].name === name) {
+            cart.splice(i, 1);
+        }
+    }
+    syncData();
+}
+
+//Изменения: обновить блок с итоговой суммой с учётом доставки
+function updateTotal() {
+    const base = getCartBaseSum();          // сумма товаров в $
+    const productsSumDisplay = Math.round(base * currentRate);
+
+    // доставка: фиксированная — 5$ или 300₽, если в корзине что-то есть
+    let delivery = 0;
+    if (base > 0) {
+        delivery = (newV1 === '$') ? 5 : 300;
+    }
+
+    const totalDisplay = productsSumDisplay + delivery;
+
+    let totalDiv = document.querySelector('.cart-total');
+    if (!totalDiv) {
+        totalDiv = document.createElement('div');
+        totalDiv.classList.add('cart-total');
+        document.body.appendChild(totalDiv);
+    }
+
+    const deliveryText = delivery > 0
+        ? ` (включая доставку ${delivery} ${newV1})`
+        : '';
+
+    totalDiv.innerText = `Итого к оплате: ${totalDisplay} ${newV1}${deliveryText}`;
+}
+
+//Изменения: основной рендер корзины
+function render() {
     const orderCartBtn = document.querySelector('.orderCartBtn');
-    
+
+    // если корзина пустая
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = "";
-        // если в корзине ничего нет
-        const emptyCartMessage = document.createElement('div');
-        emptyCartMessage.classList.add('cart__list_nothing');
-        emptyCartMessage.innerText = "Корзина пока пуста";
+        cartItemsContainer.classList.add('cart__list_empty');
 
         // скрываем кнопку "Заказать все"
         orderCartBtn.classList.add('hidden');
 
-        //ссылка для перехода обратно в каталог
+        // убираем блок "Итого к оплате", если он был
+        const totalDiv = document.querySelector('.cart-total');
+        if (totalDiv) totalDiv.remove();
+
+        // общий контейнер для сообщения и ссылки
+        const emptyBlock = document.createElement('div');
+        emptyBlock.classList.add('cart__list_nothing');
+
+        const emptyText = document.createElement('p');
+        emptyText.classList.add('cart-empty-text');
+        emptyText.innerText = "Корзина пока пуста";
+
         const catalogLink = document.createElement('a');
         catalogLink.classList.add('cataloglink');
         catalogLink.innerText = "Перейти в каталог";
         catalogLink.href = "allpechenki.html";
-        catalogLink.style.display = "block";//сделать в виде див чтобы лучше видно было а не как текст
-        catalogLink.style.marginTop = "10px";
 
-        // добавляем сообщение и ссылку в контейнер
-        cartItemsContainer.appendChild(emptyCartMessage);
-        cartItemsContainer.appendChild(catalogLink);
+        emptyBlock.appendChild(emptyText);
+        emptyBlock.appendChild(catalogLink);
+
+        cartItemsContainer.appendChild(emptyBlock);
     } else {
-        // показываем кнопку "Заказать все" если есть товары
+        cartItemsContainer.classList.remove('cart__list_empty');
         orderCartBtn.classList.remove('hidden');
-        // если есть, показать товары в корзине
-        cartItemsContainer.innerHTML = "";
-        cart.forEach(item => {
-            const itemDiv = createPosition(item);
-            // itemDiv.classList.add('cart-item')
-        
-        
 
-            // itemDiv.innerHTML = `
-            //     <img src="${item.kart}" alt="${item.name}">
-            //     <div>
-            //         <h3>${item.name}</h3>
-            //         <p>${item.descr}</p>
-            //         <p>Цена: ${item.pr} $</p>
-            //         <p>${item.we}</p>
-           //     </div>
-            // `;
-            
+        cartItemsContainer.innerHTML = "";
+
+        // рисуем сгруппированные товары
+        const groups = getCartGroups();
+        groups.forEach(item => {
+            const itemDiv = createPosition(item);
             cartItemsContainer.appendChild(itemDiv);
         });
-        const totalDiv = document.createElement('div');
-        totalDiv.classList.add('cart-total');
-        totalDiv.innerText = "Итого к оплате: " + sumInCart() + newV1;
-        document.body.appendChild(totalDiv);
+
+        updateTotal();
     }
 }
-//нужен ли рендер???
-// function render(){//обновляет отображение на экране
-//     cartItemsContainer.innerHTML=''
-//     for (let item of cart){
-        
-//     }
-// }
+
 render();
 
-// Обработчик для кнопки "Заказать всё"
-orderCartBtn.addEventListener('click', function() {
-    const totalSum = sumInCart();
-    orderProductName.innerText = `Сумма заказа: ${totalSum}${newV1}`;
+//Изменения: обработчик кнопки "Заказать всё" — показываем сумму с учётом выбранной валюты
+orderCartBtn.addEventListener('click', function () {
+    const base = getCartBaseSum();
+    const productsSumDisplay = Math.round(base * currentRate);
+    const delivery = base > 0 ? ((newV1 === '$') ? 5 : 300) : 0;
+    const totalDisplay = productsSumDisplay + delivery;
+
+    orderProductName.innerText = `Сумма заказа: ${totalDisplay} ${newV1}`;
     formZakaz.style.display = 'block';
 });
 
 // Закрытие формы при нажатии на крестик
-closeButton.addEventListener('click', function() {
+closeButton.addEventListener('click', function () {
     formZakaz.style.display = 'none';
 });
 
 // Закрытие формы при нажатии вне её области
-window.addEventListener('click', function(event) {
+window.addEventListener('click', function (event) {
     if (event.target === formZakaz) {
         formZakaz.style.display = 'none';
     }
 });
 
-// Обработка отправки формы
-document.getElementById('orderForm').addEventListener('submit', function(e) {
+// Обработка отправки формы (как было, пока без Express)
+document.getElementById('orderForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const name = document.getElementById('name').value;
     const address = document.getElementById('address').value;
-    
+
     alert(`Заказ оформлен!\nИмя: ${name}\nАдрес: ${address}`);
     formZakaz.style.display = 'none';
-    
+
     // Очистка корзины после заказа
     localStorage.clear();
     location.reload();

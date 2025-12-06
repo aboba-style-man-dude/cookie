@@ -94,48 +94,6 @@ function showNotification(message) {
     }, 3000);
 }
 
-// ================== КАТАЛОГ → ДОБАВЛЕНИЕ В КОРЗИНУ ЧЕРЕЗ EXPRESS ==================
-
-productsList.addEventListener('click', function (event) {
-    // ищем кнопку "В корзину" (даже если кликнули по внутреннему span)
-    const button = event.target.closest('.button-violet-button-toCart');
-    if (!button) return;
-
-    event.preventDefault();
-
-    const details = button.closest('.products-items-details');
-    if (!details) return;
-
-    const productName = details.querySelector('.products-items-title').innerText;
-    const product = data.find(item => item.name === productName);
-    if (!product) return;
-
-    // пока что всегда добавляем 1 набор (2 шт / 200 гр)
-    const qtyToAdd = 1;
-
-    fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // важно для сессий
-        body: JSON.stringify({
-            name: product.name,
-            kart: product.kart,
-            descr: product.descr,
-            pr: product.pr,
-            we: product.we,
-            qty: qtyToAdd
-        })
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Корзина на сервере:', data);
-            showNotification(`${productName} добавлен в корзину`);
-        })
-        .catch(err => {
-            console.error('Ошибка при добавлении в корзину', err);
-        });
-});
-
 // ================== "Купить сейчас" — модалка ==================
 
 productsList.addEventListener('click', function (event) {
@@ -177,60 +135,111 @@ orderForm.addEventListener('submit', function (e) {
 
 // ================== АНИМАЦИЯ КНОПКИ "В КОРЗИНУ" (как было) ==================
 
+// Логика анимации и СИНХРОНИЗАЦИИ кнопки "В корзину" с сервером
 document.addEventListener('DOMContentLoaded', () => {
-    const cartButtons = document.querySelectorAll('.button-violet-button-toCart');
+  const cartButtons = document.querySelectorAll('.button-violet-button-toCart');
 
-    cartButtons.forEach((button) => {
-        if (button.dataset.init === 'true') return;
-        button.dataset.init = 'true';
+  cartButtons.forEach((button) => {
+    if (button.dataset.init === 'true') return;
+    button.dataset.init = 'true';
 
-        button.addEventListener('click', (e) => {
-            // Express уже ловит клик через делегирование выше
-            e.preventDefault();
+    // Находим данные товара по DOM
+    const card = button.closest('.products-items-details') || button.closest('.products-item');
+    if (!card) return;
 
-            // если кнопка уже в режиме "В корзине" — по клику просто +1 (визуально)
-            if (button.classList.contains('in-cart')) {
-                const qtyEl = button.querySelector('.cart-btn-qty');
-                let qty = parseInt(qtyEl.textContent, 10) || 1;
-                qtyEl.textContent = qty + 1;
-                return;
-            }
+    const titleEl = card.querySelector('.products-items-title');
+    const productName = titleEl ? titleEl.innerText.trim() : '';
 
-            // первый клик — меняем вид кнопки на счётчик
-            button.classList.add('in-cart');
+    // Берём товар из массива data (он выше в файле)
+    const product = data.find(item => item.name === productName);
+    if (!product) return;
 
-            button.innerHTML = `
-                <div class="cart-button-content">
-                    <span class="cart-btn-minus">−</span>
-                    <div class="cart-btn-info">
-                        <span class="cart-btn-qty">1</span>
-                        <span class="cart-btn-text">В корзине</span>
-                    </div>
-                    <span class="cart-btn-plus">+</span>
-                </div>
-            `;
+    let currentQty = 0; // реальное количество для этого товара
 
-            const minus = button.querySelector('.cart-btn-minus');
-            const plus = button.querySelector('.cart-btn-plus');
-            const qtyEl = button.querySelector('.cart-btn-qty');
-
-            plus.addEventListener('click', (event) => {
-                event.stopPropagation();
-                let qty = parseInt(qtyEl.textContent, 10) || 1;
-                qtyEl.textContent = qty + 1;
+    // функция — отправить новое количество на сервер
+    async function syncQtyWithServer() {
+        try {
+            await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    name: product.name,
+                    price: Number(product.pr),
+                    weight: product.we,
+                    descr: product.descr,
+                    image: product.kart,   //  сюда уходят images
+                    qty: currentQty
+                })
             });
+        } catch (err) {
+            console.error('Ошибка при синхронизации корзины', err);
+        }
+    }
 
-            minus.addEventListener('click', (event) => {
-                event.stopPropagation();
-                let qty = parseInt(qtyEl.textContent, 10) || 1;
 
-                if (qty > 1) {
-                    qtyEl.textContent = qty - 1;
-                } else {
-                    button.classList.remove('in-cart');
-                    button.textContent = 'В корзину';
-                }
-            });
-        });
+    // нарисовать кнопку в виде обычной "В корзину"
+    function renderAsPlainButton() {
+      button.classList.remove('in-cart');
+      button.innerHTML = 'В корзину';
+    }
+
+    // нарисовать кнопку в виде счётчика
+    function renderAsCounter() {
+      button.classList.add('in-cart');
+      button.innerHTML = `
+        <div class="cart-button-content">
+          <span class="cart-btn-minus">−</span>
+          <div class="cart-btn-info">
+            <span class="cart-btn-qty">${currentQty}</span>
+            <span class="cart-btn-text">В корзине</span>
+          </div>
+          <span class="cart-btn-plus">+</span>
+        </div>
+      `;
+
+      const minus = button.querySelector('.cart-btn-minus');
+      const plus = button.querySelector('.cart-btn-plus');
+      const qtyEl = button.querySelector('.cart-btn-qty');
+
+      plus.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        currentQty += 1;
+        qtyEl.textContent = currentQty;
+        await syncQtyWithServer();
+      });
+
+      minus.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        if (currentQty > 1) {
+          currentQty -= 1;
+          qtyEl.textContent = currentQty;
+          await syncQtyWithServer();
+        } else {
+          // стало 0 — убираем из корзины и возвращаем обычную кнопку
+          currentQty = 0;
+          await syncQtyWithServer();
+          renderAsPlainButton();
+        }
+      });
+    }
+
+    // основной обработчик клика по кнопке
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      // если ещё не было товаров — делаем qty = 1 и включаем счётчик
+      if (!button.classList.contains('in-cart')) {
+        currentQty = 1;
+        await syncQtyWithServer();
+        renderAsCounter();
+      } else {
+        // если кликнули по уже "фиолетовой" кнопке, считаем это как +1
+        const qtyEl = button.querySelector('.cart-btn-qty');
+        currentQty = (parseInt(qtyEl.textContent, 10) || 1) + 1;
+        qtyEl.textContent = currentQty;
+        await syncQtyWithServer();
+      }
     });
+  });
 });

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Cookies</title>
+    <!-- Подключаем общие стили (где модалка из каталога) -->
+    <link rel="stylesheet" href="styles/styles.css">
+    <!-- И стили именно для корзины -->
     <link rel="stylesheet" href="styles/cart.css">
     <link rel="shortcut icon" href="icon4.png" type="image/x-icon">
 </head>
@@ -12,7 +15,7 @@
             <div class="logo">
                 <img src="images/logo.png" alt="Logo">
             </div>
-    
+
             <nav class="menu">
                 <ul class="menu-list">
                     <li class="menu-item">
@@ -35,32 +38,67 @@
         </div>
     </header>
 
-
-
     <h1 class="cart-title">Корзина</h1>
     <div class="perValuta" title="Изменить валюту">$</div>
     <button class="delCart">Очистить корзину</button>
+
     <div class="cart__list">
-        <!-- тут будут товары из корзины -->
+        <!-- сюда cart.js рендерит товары -->
     </div>
 
-
-    <div class="formZakaz">
+    <!-- Модалка оформления заказа — разметка как в каталоге -->
+    <div class="formZakaz" style="display: none;">
         <div class="modal-content">
-            <span id="closeButton" class="close">&times;</span>
-            <h2>Оформление заказа</h2>
-            <p id="orderProductName"></p>
-            <form id="orderForm" class="dannie">
-                <label for="name">Имя:</label>
-                <input type="text" id="name" name="name" required>
-                <label for="address">Адрес:</label>
-                <input type="text" id="address" name="address" required>
-                <input type="submit" value="Подтвердить заказ">
+            <button id="closeButton" class="close" type="button">&times;</button>
+
+            <h2 class="order-modal-title">Оформление заказа</h2>
+
+            <div class="order-modal-product">
+                <div class="order-modal-product-image">
+                    <img id="orderProductImage" src="" alt="">
+                </div>
+                <div class="order-modal-product-info">
+                    <div id="orderProductTitle" class="order-modal-product-name">
+                        Все товары из корзины
+                    </div>
+                    <div class="order-modal-product-subinfo">
+                        <span id="orderProductQty" class="order-modal-product-qty"></span>
+                        <span id="orderProductPrice" class="order-modal-product-price"></span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="orderForm" class="order-form">
+                <div class="order-form-field">
+                    <span>Имя</span>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="order-form-field">
+                    <span>Адрес</span>
+                    <input type="text" id="address" name="address" required>
+                </div>
+
+                <div class="order-form-field">
+                    <span>Телефон</span>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="order-form-field">
+                    <span>Комментарий к заказу</span>
+                    <textarea id="comment" name="comment" rows="3"
+                              placeholder="Например: без орехов, позвонить курьеру заранее"></textarea>
+                </div>
+
+                <button type="submit" class="order-form-submit">
+                    Подтвердить заказ
+                </button>
             </form>
         </div>
     </div>
 
     <button class="orderCartBtn">Заказать всё</button>
+
     <script src="cart.js"></script>
 </body>
 </html>

@@ -73,7 +73,7 @@
         </div>
 
         <div class="payment-methods">
-            <button class="payment-btn payment-btn-primary">Оплатить картой</button>
+            <button id="payCardBtn" class="payment-btn payment-btn-primary">Оплатить картой</button>
             <button class="payment-btn payment-btn-secondary">Apple&nbsp;Pay</button>
             <button class="payment-btn payment-btn-secondary">Google&nbsp;Pay</button>
         </div>
@@ -82,36 +82,36 @@
             <a href="allpechenki.html" class="payment-back-link">← Вернуться к каталогу</a>
         </div>
     </div>
+
+    <!-- Модальное "Спасибо за покупку!" -->
+    <div id="paymentThanks" class="payment-thanks">
+        <div class="payment-thanks-modal">
+            <p>Спасибо за покупку!</p>
+        </div>
+    </div>
 </main>
 
 <script>
-// Изменения: попытка подтянуть данные из localStorage / переданной формы (пока простая заглушка)
-(function() {
-    try {
-        const savedOrder = JSON.parse(sessionStorage.getItem("lastOrder") || "{}");
+  document.addEventListener('DOMContentLoaded', () => {
+    const payBtn = document.getElementById('payCardBtn');
+    const thanksOverlay = document.getElementById('paymentThanks');
 
-        if (savedOrder.productName) {
-            document.getElementById("paymentProductName").textContent = savedOrder.productName;
+    if (payBtn) {
+      payBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // показываем плашку "Спасибо за покупку!"
+        if (thanksOverlay) {
+          thanksOverlay.style.display = 'flex';
         }
-        if (savedOrder.price) {
-            document.getElementById("paymentProductPrice").textContent = savedOrder.price;
-        }
-        if (savedOrder.qty) {
-            document.getElementById("paymentProductQty").textContent = savedOrder.qty + " шт.";
-        }
-        if (savedOrder.name) {
-            document.getElementById("paymentUserName").textContent = savedOrder.name;
-        }
-        if (savedOrder.address) {
-            document.getElementById("paymentUserAddress").textContent = savedOrder.address;
-        }
-        if (savedOrder.phone) {
-            document.getElementById("paymentUserPhone").textContent = savedOrder.phone;
-        }
-    } catch (e) {
-        // тихо игнорируем ошибки, страница всё равно работает как статическая
+
+        // через 2 секунды возвращаемся в каталог
+        setTimeout(() => {
+          window.location.href = 'allpechenki.html';
+        }, 2000);
+      });
     }
-})();
+  });
 </script>
 
 </body>

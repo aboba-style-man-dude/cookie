@@ -716,3 +716,24 @@ body {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+.payment-thanks {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;              /* по умолчанию скрыто */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.payment-thanks-modal {
+    background: #ffffff;
+    color: #5243F4;
+    padding: 30px 40px;
+    border-radius: 20px;
+    font-size: 24px;
+    font-family: 'Steppe-ExtraBold', sans-serif;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
